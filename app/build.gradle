@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -83,12 +84,15 @@ dependencies {
     //Coroutines Dependencies
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
-    //Koin
     // Koin Core features
     implementation "io.insert-koin:koin-core:$koinVersion"
-    // Koin Test features
-    testImplementation "io.insert-koin:koin-test:$koinVersion"
 
+    // Koin for Android
+    implementation "io.insert-koin:koin-android:$koinVersion"
+
+    // Koin Test
+    testImplementation "io.insert-koin:koin-test:$koinVersion"
+    testImplementation "io.insert-koin:koin-test-junit4:$koinVersion"
 
     // Dependencies for local unit tests
     //  testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
@@ -128,15 +132,16 @@ dependencies {
     androidTestImplementation("org.koin:koin-test:$koinVersion") { exclude group: 'org.mockito' }
 
 
-
     //Maps & Geofencing
     implementation "com.google.android.gms:play-services-location:20.0.0"
     implementation "com.google.android.gms:play-services-maps:18.1.0"
 
-// Import the Firebase BoM
+    // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:29.2.0')
     implementation 'com.google.firebase:firebase-analytics'
-    // Firebase Auth
-    implementation "com.firebaseui:firebase-ui-auth:7.2.0"
+    implementation 'com.google.firebase:firebase-common-ktx:20.1.1'
 
+    // Firebase Auth
+    implementation "com.firebaseui:firebase-ui-auth:8.0.1"
+    implementation 'com.google.firebase:firebase-auth-ktx'
 }
