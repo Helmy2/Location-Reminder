@@ -1,11 +1,14 @@
 package com.udacity.project4
 
 import android.app.Application
+import androidx.lifecycle.map
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
+import com.udacity.project4.utils.AuthenticationState
+import com.udacity.project4.utils.FirebaseUserLiveData
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
@@ -37,6 +40,16 @@ class MyApp : Application() {
             }
             single { RemindersLocalRepository(get()) as ReminderDataSource }
             single { LocalDB.createRemindersDao(this@MyApp) }
+
+            single {
+                FirebaseUserLiveData().map { user ->
+                    if (user != null) {
+                        AuthenticationState.AUTHENTICATED
+                    } else {
+                        AuthenticationState.UNAUTHENTICATED
+                    }
+                }
+            }
         }
 
         startKoin {

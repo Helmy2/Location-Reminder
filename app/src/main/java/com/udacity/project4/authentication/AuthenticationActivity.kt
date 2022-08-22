@@ -3,15 +3,20 @@ package com.udacity.project4.authentication
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.udacity.project4.R
+import com.udacity.project4.databinding.ActivityAuthenticationBinding
 import com.udacity.project4.locationreminders.RemindersActivity
+import com.udacity.project4.utils.AuthenticationState
+import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 
 
 /**
@@ -22,6 +27,8 @@ private const val TAG = "AuthenticationActivity"
 
 class AuthenticationActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
+    private lateinit var binding: ActivityAuthenticationBinding
+    private val authenticationState: LiveData<AuthenticationState> = get()
     private val signInLauncher = registerForActivityResult(
         FirebaseAuthUIActivityResultContract()
     ) { res ->
@@ -30,19 +37,26 @@ class AuthenticationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_authentication)
-
+        binding = ActivityAuthenticationBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         auth = Firebase.auth
 
-        val currentUser = auth.currentUser
-        if (currentUser == null)
+        // TODO: Implement the create account and sign in using FirebaseUI, use sign in using email and sign in using Google
+        binding.loginButton.setOnClickListener {
             launchSignInFlow()
-        else {
-            val intent = Intent(this, RemindersActivity::class.java)
-            startActivity(intent)
         }
-    }
 
+        // TODO: If the user was authenticated, send him to RemindersActivity
+        authenticationState.observe(this) {
+            if (it == AuthenticationState.AUTHENTICATED) {
+                val intent = Intent(this, RemindersActivity::class.java)
+                startActivity(intent)
+            }
+        }
+        // TODO: a bonus is to customize the sign in flow to look nice using :
+        //https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md#custom-layout
+
+    }
 
     private fun launchSignInFlow() {
         // Choose authentication providers
