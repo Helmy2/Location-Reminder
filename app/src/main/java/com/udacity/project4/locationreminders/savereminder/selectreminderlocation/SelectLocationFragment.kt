@@ -4,7 +4,9 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -66,18 +68,26 @@ class SelectLocationFragment : BaseFragment() {
 
         mapFragment.getMapAsync {
             map = it
-//             Add a marker in Sydney and move the camera
-//            val sydney = LatLng(-34.0, 151.0)
-//            map.addMarker(
-//                MarkerOptions()
-//                    .position(sydney)
-//                    .title("Marker in Sydney")
-//            )
-//            map.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-//            map.uiSettings.isZoomControlsEnabled = true
             enableUserLocation()
             setOnMapClick(map)
             setPoiClick(map)
+            setMapStyle(map)
+        }
+    }
+
+    private fun setMapStyle(map: GoogleMap) {
+        try {
+            val success = map.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    requireContext(),
+                    R.raw.map_style
+                )
+            )
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.")
+            }
+        } catch (e: Resources.NotFoundException) {
+            Log.e(TAG, "sCan't find style. Error: $e")
         }
     }
 
