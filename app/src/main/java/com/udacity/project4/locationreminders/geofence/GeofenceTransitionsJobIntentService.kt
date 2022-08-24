@@ -6,17 +6,19 @@ import android.util.Log
 import androidx.core.app.JobIntentService
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
+import com.udacity.project4.R
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
-import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
+import com.udacity.project4.utils.errorMessage
 import com.udacity.project4.utils.sendNotification
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import kotlin.coroutines.CoroutineContext
 
 private const val TAG = "GeofenceTransitionsJobI"
+
 class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
     private var coroutineJob: Job = Job()
@@ -43,18 +45,21 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
         if (geofencingEvent?.hasError() == true) {
-            Log.d(TAG, "onHandleWork: ERROR ${geofencingEvent.errorCode}")
+            val errorMessage = errorMessage(applicationContext, geofencingEvent.errorCode)
+            Log.d(TAG, "onHandleWork: ERROR $errorMessage")
             return
         }
 
         if (geofencingEvent?.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
+            Log.v(TAG, applicationContext.getString(R.string.geofence_entered))
             geofencingEvent.triggeringGeofences?.let { sendNotification(it) }
         }
     }
 
     //TODO: get the request id of the current geofence
     private fun sendNotification(triggeringGeofences: List<Geofence>) {
-        val requestId = ""
+        val requestId = triggeringGeofences[0].requestId
+        Log.d(TAG, "send notification true")
 
         //Get the local repository instance
         val remindersLocalRepository: ReminderDataSource by inject()

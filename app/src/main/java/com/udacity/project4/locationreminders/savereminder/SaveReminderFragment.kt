@@ -30,8 +30,6 @@ private const val TAG = "SaveReminderFragment"
 private const val REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 33
 private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
 private const val REQUEST_TURN_DEVICE_LOCATION_ON = 29
-private const val LOCATION_PERMISSION_INDEX = 0
-private const val BACKGROUND_LOCATION_PERMISSION_INDEX = 1
 
 class SaveReminderFragment : BaseFragment() {
     //Get the view model this time as a single to be shared with the another fragment
@@ -42,10 +40,11 @@ class SaveReminderFragment : BaseFragment() {
     private lateinit var reminderData: ReminderDataItem
     private lateinit var geofencingClient: GeofencingClient
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_save_reminder, container, false)
 
@@ -129,7 +128,6 @@ class SaveReminderFragment : BaseFragment() {
         if (this::reminderData.isInitialized) {
             val currentGeofenceData = reminderData
 
-
             val geofence = Geofence.Builder()
                 .setRequestId(currentGeofenceData.id)
                 .setCircularRegion(
@@ -146,33 +144,32 @@ class SaveReminderFragment : BaseFragment() {
                 .addGeofence(geofence)
                 .build()
 
-
             val intent =
                 Intent(requireContext().applicationContext, GeofenceBroadcastReceiver::class.java)
-            intent.action = GeofenceBroadcastReceiver.ACTION_GEOFENCE_EVENT
+                    .apply { action = GeofenceBroadcastReceiver.ACTION_GEOFENCE_EVENT }
 
             val geofencePendingIntent = PendingIntent.getBroadcast(
                 requireContext(),
                 0,
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
 
-            geofencingClient.removeGeofences(geofencePendingIntent).run {
-                addOnCompleteListener {
-                    geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent).run {
-                        addOnSuccessListener {
-                            Log.i(TAG, "Add Geofence " + geofence.requestId)
-                            _viewModel.saveReminder(reminderData)
-                        }
-                        addOnFailureListener {
-                            if ((it.message != null)) {
-                                Log.w(TAG, it.message!!)
-                            }
-                        }
+            geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)
+                .addOnSuccessListener {
+                    Log.i(TAG, "Add Geofence " + geofence.requestId)
+                    _viewModel.saveReminder(reminderData)
+                }
+                .addOnFailureListener {
+                    if (it.message != null) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Failed to add location!!! Try again later!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        checkDeviceLocationSettingsAndStartGeofence()
                     }
                 }
-            }
         }
     }
 
