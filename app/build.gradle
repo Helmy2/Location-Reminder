@@ -84,15 +84,8 @@ dependencies {
     //Coroutines Dependencies
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
-    // Koin Core features
-    implementation "io.insert-koin:koin-core:$koinVersion"
-
-    // Koin for Android
+    //Koin
     implementation "io.insert-koin:koin-android:$koinVersion"
-
-    // Koin Test
-    testImplementation "io.insert-koin:koin-test:$koinVersion"
-    testImplementation "io.insert-koin:koin-test-junit4:$koinVersion"
 
     // Dependencies for local unit tests
     //  testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
@@ -129,15 +122,18 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
     androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
     androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
-    androidTestImplementation("org.koin:koin-test:$koinVersion") { exclude group: 'org.mockito' }
 
+    // Koin testing tools
+    androidTestImplementation "io.insert-koin:koin-test:$koinVersion"
+    // Needed JUnit version
+    androidTestImplementation "io.insert-koin:koin-test-junit4:$koinVersion"
 
     //Maps & Geofencing
     implementation "com.google.android.gms:play-services-location:20.0.0"
     implementation "com.google.android.gms:play-services-maps:18.1.0"
 
     // Import the Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:29.2.0')
+    implementation platform('com.google.firebase:firebase-bom:30.3.2')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-common-ktx:20.1.1'
 
