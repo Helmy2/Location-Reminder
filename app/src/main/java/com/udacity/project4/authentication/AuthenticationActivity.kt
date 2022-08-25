@@ -14,9 +14,11 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.udacity.project4.databinding.ActivityAuthenticationBinding
 import com.udacity.project4.locationreminders.RemindersActivity
+import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.utils.AuthenticationState
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 /**
@@ -28,7 +30,8 @@ private const val TAG = "AuthenticationActivity"
 class AuthenticationActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityAuthenticationBinding
-    private val authenticationState: LiveData<AuthenticationState> = get()
+    val viewModel: AuthenticationViewModel by viewModel()
+
     private val signInLauncher = registerForActivityResult(
         FirebaseAuthUIActivityResultContract()
     ) { res ->
@@ -47,7 +50,7 @@ class AuthenticationActivity : AppCompatActivity() {
         }
 
         // TODO: If the user was authenticated, send him to RemindersActivity
-        authenticationState.observe(this) {
+        viewModel.authenticationState.observe(this) {
             if (it == AuthenticationState.AUTHENTICATED) {
                 val intent = Intent(this, RemindersActivity::class.java)
                 startActivity(intent)

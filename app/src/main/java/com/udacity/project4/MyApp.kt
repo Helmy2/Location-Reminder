@@ -2,6 +2,7 @@ package com.udacity.project4
 
 import android.app.Application
 import androidx.lifecycle.map
+import com.udacity.project4.authentication.AuthenticationViewModel
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
@@ -27,7 +28,7 @@ class MyApp : Application() {
             viewModel {
                 RemindersListViewModel(
                     get(),
-                    get() as ReminderDataSource
+                    get() as ReminderDataSource,
                 )
             }
             //Declare singleton definitions to be later injected using by inject()
@@ -38,18 +39,11 @@ class MyApp : Application() {
                     get() as ReminderDataSource
                 )
             }
+            single {
+                AuthenticationViewModel()
+            }
             single { RemindersLocalRepository(get()) as ReminderDataSource }
             single { LocalDB.createRemindersDao(this@MyApp) }
-
-            single {
-                FirebaseUserLiveData().map { user ->
-                    if (user != null) {
-                        AuthenticationState.AUTHENTICATED
-                    } else {
-                        AuthenticationState.UNAUTHENTICATED
-                    }
-                }
-            }
         }
 
         startKoin {

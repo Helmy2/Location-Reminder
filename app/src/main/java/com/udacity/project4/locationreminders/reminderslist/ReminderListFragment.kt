@@ -21,8 +21,6 @@ class ReminderListFragment : BaseFragment() {
     //use Koin to retrieve the ViewModel instance
     override val _viewModel: RemindersListViewModel by viewModel()
     private lateinit var binding: FragmentRemindersBinding
-    private val authenticationState: LiveData<AuthenticationState> = get()
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,7 +49,7 @@ class ReminderListFragment : BaseFragment() {
         binding.addReminderFAB.setOnClickListener {
             navigateToAddReminder()
         }
-        authenticationState.observe(viewLifecycleOwner) {
+        _viewModel.authenticationState.observe(viewLifecycleOwner) {
             if (it == AuthenticationState.UNAUTHENTICATED) {
                 requireActivity().finish()
             }
