@@ -55,12 +55,6 @@ class RemindersListViewModelTest {
 
     @Test
     fun loadRemindersTest_emptyList() = runBlocking {
-        dataSource = FakeDataSource()
-        viewModel = RemindersListViewModel(
-            getApplicationContext(),
-            dataSource
-        )
-
         viewModel.loadReminders()
 
         assertEquals(emptyList(), viewModel.remindersList.getOrAwaitValue())
@@ -105,8 +99,6 @@ class RemindersListViewModelTest {
 
     @Test
     fun checkError() {
-        dataSource = FakeDataSource()
-        viewModel = RemindersListViewModel(getApplicationContext(), dataSource)
         dataSource.setReturnError(true)
 
         viewModel.loadReminders()
