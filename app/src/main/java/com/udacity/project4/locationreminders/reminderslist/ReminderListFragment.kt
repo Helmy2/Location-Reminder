@@ -49,11 +49,6 @@ class ReminderListFragment : BaseFragment() {
         binding.addReminderFAB.setOnClickListener {
             navigateToAddReminder()
         }
-        _viewModel.authenticationState.observe(viewLifecycleOwner) {
-            if (it == AuthenticationState.UNAUTHENTICATED) {
-                requireActivity().finish()
-            }
-        }
     }
 
     override fun onResume() {
@@ -84,6 +79,7 @@ class ReminderListFragment : BaseFragment() {
             R.id.logout -> {
                 val auth = Firebase.auth
                 auth.signOut()
+                requireActivity().finish()
             }
         }
         return super.onOptionsItemSelected(item)
