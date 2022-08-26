@@ -8,19 +8,19 @@ import com.udacity.project4.MainCoroutineRule
 import com.udacity.project4.getOrAwaitValue
 import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.pauseDispatcher
 import org.junit.After
+import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.GlobalContext.stopKoin
 import org.robolectric.annotation.Config
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertTrue
 
 
 @RunWith(AndroidJUnit4::class)
@@ -57,7 +57,7 @@ class RemindersListViewModelTest {
     fun loadRemindersTest_emptyList() = runBlocking {
         viewModel.loadReminders()
 
-        assertEquals(emptyList(), viewModel.remindersList.getOrAwaitValue())
+        assertEquals(emptyList<ReminderDataItem>(), viewModel.remindersList.getOrAwaitValue())
     }
 
     @Test
@@ -85,7 +85,7 @@ class RemindersListViewModelTest {
 
         viewModel.loadReminders()
 
-        assertNotEquals(emptyList(), viewModel.remindersList.getOrAwaitValue())
+        assertNotEquals(emptyList<ReminderDataItem>(), viewModel.remindersList.getOrAwaitValue())
         assertEquals(reminderList.size, viewModel.remindersList.getOrAwaitValue().size)
     }
 

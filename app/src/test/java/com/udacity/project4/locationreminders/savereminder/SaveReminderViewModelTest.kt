@@ -10,6 +10,7 @@ import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
+import junit.framework.TestCase.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.pauseDispatcher
@@ -20,10 +21,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.GlobalContext
 import org.robolectric.annotation.Config
-import kotlin.test.assertEquals
-import kotlin.test.assertFails
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+
 
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
