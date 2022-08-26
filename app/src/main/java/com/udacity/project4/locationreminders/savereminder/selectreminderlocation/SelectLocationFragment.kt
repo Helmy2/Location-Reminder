@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
@@ -72,6 +73,15 @@ class SelectLocationFragment : BaseFragment() {
             setOnMapClick(map)
             setPoiClick(map)
             setMapStyle(map)
+            setOnLocationChanged(map)
+        }
+    }
+
+    private fun setOnLocationChanged(map: GoogleMap) {
+        map.setOnMyLocationChangeListener {
+            val homeLatLng = LatLng(it.latitude, it.longitude)
+            val zoomLevel = 18f
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
         }
     }
 
