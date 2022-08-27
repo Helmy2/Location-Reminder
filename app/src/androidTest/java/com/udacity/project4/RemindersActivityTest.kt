@@ -12,6 +12,7 @@ import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.rule.ActivityTestRule
 import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.local.LocalDB
@@ -19,9 +20,9 @@ import com.udacity.project4.locationreminders.data.local.RemindersLocalRepositor
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.not
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -40,9 +41,9 @@ class RemindersActivityTest :
     private lateinit var repository: ReminderDataSource
     private lateinit var appContext: Application
 
-//    @get:Rule
-//    var activityTestRule: ActivityTestRule<RemindersActivity> =
-//        ActivityTestRule(RemindersActivity::class.java)
+    @get:Rule
+    var activityTestRule: ActivityTestRule<RemindersActivity> =
+        ActivityTestRule(RemindersActivity::class.java)
 
     /**
      * As we use Koin as a Service Locator Library to develop our code, we'll also use Koin to test our code.
@@ -103,6 +104,27 @@ class RemindersActivityTest :
     }
 
     @Test
+    fun saveReminder_showToast_Test(){
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+
+        onView(withId(R.id.noDataTextView)).check(matches(isDisplayed()))
+        onView(withId(R.id.addReminderFAB)).perform(click())
+        onView(withId(R.id.reminderTitle)).perform(replaceText("title"))
+        onView(withId(R.id.reminderDescription)).perform(replaceText("description"))
+        onView(withId(R.id.selectLocation)).perform(click())
+        onView(withId(R.id.mapFragment)).perform(click())
+        onView(withId(R.id.saveButton)).perform(click())
+        onView(withId(R.id.saveReminder)).perform(click())
+
+        val remindersActivity =  activityTestRule.activity
+        onView(withText(R.string.reminder_saved))
+            .inRoot(withDecorView(not(remindersActivity.window.decorView))).check(
+                matches(isDisplayed())
+            )
+        activityScenario.close()
+    }
+
+    @Test
     fun saveReminderScreen_showSnackBarTitleError() {
 
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
@@ -130,14 +152,5 @@ class RemindersActivityTest :
         onView(withText(snackBarMessage)).check(matches(isDisplayed()))
 
         activityScenario.close()
-    }
-
-    // get activity context
-    private fun getActivity(activityScenario: ActivityScenario<RemindersActivity>): Activity? {
-        var activity: Activity? = null
-        activityScenario.onActivity {
-            activity = it
-        }
-        return activity
     }
 }
