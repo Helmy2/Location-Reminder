@@ -3,9 +3,12 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.*
 import android.widget.Toast
@@ -16,6 +19,8 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.material.snackbar.Snackbar
+import com.udacity.project4.BuildConfig
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
@@ -73,15 +78,6 @@ class SelectLocationFragment : BaseFragment() {
             setOnMapClick(map)
             setPoiClick(map)
             setMapStyle(map)
-            setOnLocationChanged(map)
-        }
-    }
-
-    private fun setOnLocationChanged(map: GoogleMap) {
-        map.setOnMyLocationChangeListener {
-            val homeLatLng = LatLng(it.latitude, it.longitude)
-            val zoomLevel = 18f
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
         }
     }
 
@@ -152,22 +148,24 @@ class SelectLocationFragment : BaseFragment() {
 
     @SuppressLint("MissingPermission")
     private fun enableUserLocation() {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (isPermissionGranted()) {
             map.isMyLocationEnabled = true
             return
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION_PERMISSION
+            )
         }
-        ActivityCompat.requestPermissions(
+        map.moveCamera(CameraUpdateFactory.zoomIn())
+    }
+
+    private fun isPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
             requireActivity(),
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            REQUEST_LOCATION_PERMISSION
-        )
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun onLocationSelected() {
@@ -187,6 +185,13 @@ class SelectLocationFragment : BaseFragment() {
         }
     }
 
+    @SuppressLint("MissingPermission")
+    override fun onResume() {
+        super.onResume()
+        if (isPermissionGranted())
+            if (::map.isInitialized)
+                map.isMyLocationEnabled = true
+    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -199,6 +204,19 @@ class SelectLocationFragment : BaseFragment() {
         if (requestCode == REQUEST_LOCATION_PERMISSION) {
             if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 enableUserLocation()
+            } else {
+                Snackbar.make(
+                    binding.root,
+                    R.string.permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
+                )
+                    .setAction(R.string.settings) {
+                        // Displays App settings screen.
+                        startActivity(Intent().apply {
+                            action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                            data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        })
+                    }.show()
             }
         }
     }
