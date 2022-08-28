@@ -21,8 +21,33 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Reminder Details"
+            android:text="@{`Title:`+reminderDataItem.title}"
+            android:padding="16dp"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+
+            android:text="@{`Description: `+reminderDataItem.description}"
+            android:textSize="@dimen/text_size_large"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+
+            android:text="@{`Location: `+reminderDataItem.location}"
+            android:drawablePadding="2dp"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
