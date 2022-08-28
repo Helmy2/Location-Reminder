@@ -13,7 +13,9 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.pauseDispatcher
+import kotlinx.coroutines.test.resumeDispatcher
 import org.junit.After
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Rule
@@ -94,6 +96,9 @@ class RemindersListViewModelTest {
         mainCoroutineRule.pauseDispatcher()
         viewModel.loadReminders()
         assertTrue(viewModel.showLoading.getOrAwaitValue())
+
+        mainCoroutineRule.resumeDispatcher()
+        assertFalse(viewModel.showLoading.getOrAwaitValue())
     }
 
 
